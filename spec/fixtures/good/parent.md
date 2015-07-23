@@ -10,11 +10,3 @@ Summary goes here.
 
 Author goes here.
 
-## Links
-
-- [LoC](http://loc.gov)
-- [WGBH](http://wgbh.org)
-
-## Description
-
-Description goes here.

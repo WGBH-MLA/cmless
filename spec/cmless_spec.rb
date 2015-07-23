@@ -8,6 +8,9 @@ describe Cmless do
       def self.root_path
         File.expand_path('fixtures/good', File.dirname(__FILE__))
       end
+      
+      attr_reader :summary_html
+      attr_reader :author_html
     end
 
     exhibit = TestCmless.find_by_path('parent/child/grandchild')

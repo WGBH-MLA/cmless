@@ -7,36 +7,34 @@ require 'singleton'
 require 'nokogiri'
 
 class Cmless
-
-  class Markdowner
-    include Singleton
   
-    def initialize()
-      @markdown = Redcarpet::Markdown.new(
-                    Redcarpet::Render::XHTML.new(with_toc_data: true), 
-                    autolink: true)
-    end
+  attr_reader :path
   
-    def render(md_text)
-      return unless md_text
-      @markdown.render(md_text)
-    end
-  end
+  def initialize(file_path)
+    @path = self.class.path_from_file_path(file_path)
+    Nokogiri::HTML(Markdowner.instance.render(File.read(file_path))).tap do |doc|
+      @name = doc.xpath('//h1').first.remove.text
 
-  def self.objects_by_path
-    @objects_by_path ||= 
-      Hash[
-        Dir[self.root_path + '**/*.md'].sort.map do |path|
-          object = self.new(path)
-          [object.path, object]
+      # TODO: get header content.
+      
+      self.class.instance_methods.
+        select { |method| method.to_s.match(/\_html$/) }.
+        each do |method|
+          h2_name = method.to_s.gsub(/\_html$/, '').gsub('_',' ').capitalize
+          variable_name = "@#{method.to_s}"
+          self.instance_variable_set(variable_name, Cmless.extract_html(doc, h2_name))
         end
-      ]
+      
+      doc.text.strip.tap do |extra|
+        escaped = extra.gsub("\n",'\\n').gsub("\t",'\\t')
+        fail("#{file_path} has extra unused text: '#{escaped}'") unless extra == ''
+      end
+    end
   end
   
-  def self.find_by_path(path)
-    self.objects_by_path[path] || raise(IndexError.new("'#{path}' is not a valid path under '#{self.root_path}'"))
-  end
-
+  
+  # Instance methods:
+  
   def ancestors
     @ancestors ||= begin
       split = path.split('/')
@@ -55,6 +53,23 @@ class Cmless
       end
     end
   end
+  
+  
+  # Class methods:
+  
+  def self.objects_by_path
+    @objects_by_path ||= 
+      Hash[
+        Dir[Pathname(self.root_path) + '**/*.md'].sort.map do |path|
+          object = self.new(path)
+          [object.path, object]
+        end
+      ]
+  end
+  
+  def self.find_by_path(path)
+    self.objects_by_path[path] || raise(IndexError.new("'#{path}' is not a valid path under '#{self.root_path}'"))
+  end
 
   def self.extract_html(doc, title)
     following_siblings = []
@@ -71,19 +86,22 @@ class Cmless
   def self.path_from_file_path(file_path)
     file_path.to_s.gsub(self.root_path.to_s+'/', '').gsub(/\.md$/, '')
   end
-
-  def initialize(file_path)
-    @path = self.class.path_from_file_path(file_path)
-    Nokogiri::HTML(Markdowner.instance.render(File.read(file_path))).tap do |doc|
-      @name = doc.xpath('//h1').first.remove.text
-
-# TODO: iterate over defined accessors.      
-#      @summary_html = Exhibit::extract_html(doc, 'Summary')
-#      @author_html = Exhibit::extract_html(doc, 'Author')
-      
-      doc.text.strip.tap do |extra|
-        fail("#{file_path} has extra unused text: '#{extra.gsub("\n",'\\n').gsub("\t",'\\t')}'") unless extra == ''
-      end
+  
+  
+  # Utility class: (This could move.)
+  
+  class Markdowner
+    include Singleton
+  
+    def initialize()
+      @markdown = Redcarpet::Markdown.new(
+                    Redcarpet::Render::XHTML.new(with_toc_data: true), 
+                    autolink: true)
+    end
+  
+    def render(md_text)
+      return unless md_text
+      @markdown.render(md_text)
     end
   end
   
