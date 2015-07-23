@@ -72,6 +72,17 @@ describe Cmless do
         expect { ExtraCruft.find_by_path('extra-cruft')}.to raise_error(/Extra Cruft\\n\\nShould cause an error/)
       end
     end
+    
+    describe 'missing #root_path' do
+      class MissingRootPath < Cmless
+        # What happens if we forget "def self.root_path"?
+      end
+      
+      it 'errors' do
+        expect { MissingRootPath.find_by_path('does-not-matter')}.to raise_error(/undefined method `root_path'/)
+      end
+    end
+    
   end
 
 end

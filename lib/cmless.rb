@@ -11,6 +11,9 @@ class Cmless
   attr_reader :path
   attr_reader :title
   
+  private
+  
+  # You should use find_by_path rather than creating your own objects.
   def initialize(file_path)
     @path = self.class.path_from_file_path(file_path)
     Nokogiri::HTML(Markdowner.instance.render(File.read(file_path))).tap do |doc|
@@ -33,6 +36,7 @@ class Cmless
     end
   end
   
+  public
   
   # Instance methods:
   
