@@ -19,15 +19,24 @@ class Cmless
     Nokogiri::HTML(Markdowner.instance.render(File.read(file_path))).tap do |doc|
       @title = doc.xpath('//h1').first.remove.text
 
-      # TODO: get header content.
+      html_methods = self.class.instance_methods.
+        select { |method| method.to_s.match(/\_html$/) }
       
-      self.class.instance_methods.
-        select { |method| method.to_s.match(/\_html$/) }.
-        each do |method|
-          h2_name = method.to_s.gsub(/\_html$/, '').gsub('_',' ').capitalize
-          variable_name = "@#{method.to_s}"
-          self.instance_variable_set(variable_name, Cmless.extract_html(doc, h2_name))
-        end
+      if html_methods.include?(:head_html)
+        self.instance_variable_set('@head_html', Cmless.extract_head_html(doc))
+        html_methods.delete(:head_html)
+      end
+      
+      if html_methods.include?(:body_html)
+        self.instance_variable_set('@body_html', Cmless.extract_body_html(doc))
+        html_methods.delete(:body_html)
+      end
+      
+      html_methods.each do |method|
+        h2_name = method.to_s.gsub(/\_html$/, '').gsub('_',' ').capitalize
+        variable_name = "@#{method.to_s}"
+        self.instance_variable_set(variable_name, Cmless.extract_html(doc, h2_name))
+      end
       
       doc.text.strip.tap do |extra|
         escaped = extra.gsub("\n",'\\n').gsub("\t",'\\t')
@@ -81,6 +90,10 @@ class Cmless
     self.objects_by_path[path] || raise(IndexError.new("'#{path}' is not a valid path under '#{self.root_path}'; Expected one of #{self.objects_by_path.keys}"))
   end
 
+  def self.path_from_file_path(file_path)
+    file_path.to_s.gsub(self.root_path.to_s+'/', '').gsub(/\.md$/, '')
+  end
+  
   def self.extract_html(doc, title)
     following_siblings = []
     doc.xpath("//h2[text()='#{title}']").first.tap do |header|
@@ -93,8 +106,17 @@ class Cmless
     following_siblings.map { |el| el.to_s }.join
   end
   
-  def self.path_from_file_path(file_path)
-    file_path.to_s.gsub(self.root_path.to_s+'/', '').gsub(/\.md$/, '')
+  def self.extract_head_html(doc)
+    siblings = []
+    body = doc.xpath('//body').first
+    while body.children.first && !body.children.first.name.match(/h2/)
+      siblings.push(body.children.first.remove)
+    end
+    siblings.map { |el| el.to_s }.join.strip
+  end
+  
+  def self.extract_body_html(doc)
+    doc.xpath('//body').children.map { |el| el.to_s }.join
   end
   
   

@@ -10,6 +10,7 @@ describe Cmless do
         def self.root_path
           File.expand_path('fixtures/good/basic', File.dirname(__FILE__))
         end
+        attr_reader :head_html
         attr_reader :summary_html
         attr_reader :can_be_multi_word_html
       end
@@ -21,6 +22,7 @@ describe Cmless do
         path: 'basic',
         ancestors: [],
         children: [],
+        head_html: '<p>Head goes here.</p>',
         can_be_multi_word_html: '<p>Should work, too.</p>',
         summary_html: '<p>Summary goes here.</p>'
       }
