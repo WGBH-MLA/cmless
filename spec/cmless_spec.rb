@@ -43,6 +43,38 @@ describe Cmless do
       
     end
     
+    describe 'body' do
+      
+      class Body < Cmless
+        def self.root_path
+          File.expand_path('fixtures/good/body', File.dirname(__FILE__))
+        end
+        
+        attr_reader :body_html
+      end
+      
+      body = Body.find_by_path('body')
+      
+      assertions = {
+        title: 'Just a title',
+        path: 'body',
+        ancestors: [],
+        children: [],
+        body_html: "<p>and a body</p>\n\n<h2 id=\"which\">which</h2>\n\n<p>includes everything.</p>"
+      }
+      
+      assertions.each do |method, value|
+        it "\##{method} method works" do
+          expect(body.send(method)).to eq((value.strip rescue value))
+        end
+      end
+
+      it 'tests everthing' do
+        expect(assertions.keys.sort).to eq((Body.instance_methods - Object.instance_methods).sort)
+      end
+      
+    end
+    
     describe 'hierarchical' do
   
       class Hierarchy < Cmless

@@ -116,7 +116,12 @@ class Cmless
   end
   
   def self.extract_body_html(doc)
-    doc.xpath('//body').children.map { |el| el.to_s }.join
+    siblings = []
+    body = doc.xpath('//body').first
+    while body.children.first
+      siblings.push(body.children.first.remove)
+    end
+    siblings.map { |el| el.to_s }.join.strip
   end
   
   
