@@ -9,12 +9,12 @@ require 'nokogiri'
 class Cmless
   
   attr_reader :path
-  attr_reader :name
+  attr_reader :title
   
   def initialize(file_path)
     @path = self.class.path_from_file_path(file_path)
     Nokogiri::HTML(Markdowner.instance.render(File.read(file_path))).tap do |doc|
-      @name = doc.xpath('//h1').first.remove.text
+      @title = doc.xpath('//h1').first.remove.text
 
       # TODO: get header content.
       

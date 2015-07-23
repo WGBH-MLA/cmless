@@ -16,7 +16,7 @@ describe Cmless do
     exhibit = TestCmless.find_by_path('parent/child/grandchild')
 
     assertions = {
-      name: 'Grandchild!',
+      title: 'Grandchild!',
       path: 'parent/child/grandchild',
       ancestors: [
         TestCmless.find_by_path('parent'),
