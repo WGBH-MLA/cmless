@@ -45,31 +45,33 @@ describe Cmless do
     end
   end
 
-#  describe 'mis-configured' do
-#    describe 'misspelled h2' do
-#      class MisspelledH2 < Cmless
-#        def self.root_path
-#          File.expand_path('fixtures/good', File.dirname(__FILE__))
-#          Rails.root + 'spec/fixtures/exhibits-broken/misspelled-h2'
-#        end
-#      end
-#      
-#      it 'errors' do
-#        expect { MisspelledH2MockExhibit.find_by_path('misspelled-h2')}.to raise_error(/Can't find header/)
-#      end
-#    end
-#    
-#    describe 'extra cruft' do
-#      class ExtraCruftMockExhibit < Exhibit
-#        def self.exhibit_root
-#          Rails.root + 'spec/fixtures/exhibits-broken/extra-cruft'
-#        end
-#      end
-#      
-#      it 'errors' do
-#        expect { ExtraCruftMockExhibit.find_by_path('extra-cruft')}.to raise_error(/Extra Cruft\s+Should cause an error/)
-#      end
-#    end
-#  end
+  describe 'mis-configured' do
+    describe 'misspelled h2' do
+      class WrongName < Cmless
+        def self.root_path
+          File.expand_path('fixtures/bad/wrong-name', File.dirname(__FILE__))
+        end
+
+        attr_reader :summary_html
+        attr_reader :author_html
+      end
+      
+      it 'errors' do
+        expect { WrongName.find_by_path('wrong-name')}.to raise_error(/Can't find header/)
+      end
+    end
+    
+    describe 'extra cruft' do
+      class ExtraCruft < Cmless
+        def self.root_path
+          File.expand_path('fixtures/bad/extra-cruft', File.dirname(__FILE__))
+        end
+      end
+      
+      it 'errors' do
+        expect { ExtraCruft.find_by_path('extra-cruft')}.to raise_error(/Extra Cruft\\n\\nShould cause an error/)
+      end
+    end
+  end
 
 end

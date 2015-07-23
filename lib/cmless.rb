@@ -69,7 +69,7 @@ class Cmless
   end
   
   def self.find_by_path(path)
-    self.objects_by_path[path] || raise(IndexError.new("'#{path}' is not a valid path under '#{self.root_path}'"))
+    self.objects_by_path[path] || raise(IndexError.new("'#{path}' is not a valid path under '#{self.root_path}'; Expected one of #{self.objects_by_path.keys}"))
   end
 
   def self.extract_html(doc, title)
