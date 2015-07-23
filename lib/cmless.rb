@@ -63,13 +63,18 @@ class Cmless
   # Class methods:
   
   def self.objects_by_path
-    @objects_by_path ||= 
-      Hash[
-        Dir[Pathname(self.root_path) + '**/*.md'].sort.map do |path|
-          object = self.new(path)
-          [object.path, object]
+    @objects_by_path ||=
+      begin
+        unless File.directory?(self.root_path)
+          raise StandardError.new("#{self.root_path} is not a directory")
         end
-      ]
+        Hash[
+          Dir[Pathname(self.root_path) + '**/*.md'].sort.map do |path|
+            object = self.new(path)
+            [object.path, object]
+          end
+        ]
+      end
   end
   
   def self.find_by_path(path)

@@ -111,7 +111,19 @@ describe Cmless do
       end
       
       it 'errors' do
-        expect { MissingRootPath.find_by_path('does-not-matter')}.to raise_error(/undefined method `root_path'/)
+        expect { MissingRootPath.find_by_path('does-not-matter') }.to raise_error(/undefined method `root_path'/)
+      end
+    end
+    
+    describe 'bad #root_path' do
+      class BadRootPath < Cmless
+        def self.root_path
+          '/no/such/path'
+        end
+      end
+      
+      it 'errors' do
+        expect { BadRootPath.find_by_path('does-not-matter') }.to raise_error(/is not a directory/)
       end
     end
     
