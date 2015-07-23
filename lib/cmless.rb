@@ -9,6 +9,7 @@ require 'nokogiri'
 class Cmless
   
   attr_reader :path
+  attr_reader :name
   
   def initialize(file_path)
     @path = self.class.path_from_file_path(file_path)

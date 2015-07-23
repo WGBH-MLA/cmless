@@ -24,6 +24,8 @@ describe Cmless do
       children: [
         TestCmless.find_by_path('parent/child/grandchild/greatgrandchild1'), 
         TestCmless.find_by_path('parent/child/grandchild/greatgrandchild2')],
+      author_html: '<p>Author goes here.</p>',
+      summary_html: '<p>Summary goes here.</p>'
     }
 
     assertions.each do |method, value|
@@ -33,20 +35,21 @@ describe Cmless do
     end
 
     it 'tests everthing' do
-      expect(assertions.keys.sort).to eq(Exhibit.instance_methods(false).sort)
+      expect(assertions.keys.sort).to eq((TestCmless.instance_methods - Object.instance_methods).sort)
     end
 
     describe 'error handling' do
       it 'raises an error for bad paths' do
-        expect {MockExhibit.find_by_path('no/such/path')}.to raise_error(IndexError)
+        expect {TestCmless.find_by_path('no/such/path')}.to raise_error(IndexError)
       end
     end
   end
 
 #  describe 'mis-configured' do
 #    describe 'misspelled h2' do
-#      class MisspelledH2MockExhibit < Exhibit
-#        def self.exhibit_root
+#      class MisspelledH2 < Cmless
+#        def self.root_path
+#          File.expand_path('fixtures/good', File.dirname(__FILE__))
 #          Rails.root + 'spec/fixtures/exhibits-broken/misspelled-h2'
 #        end
 #      end
@@ -68,4 +71,5 @@ describe Cmless do
 #      end
 #    end
 #  end
+
 end
