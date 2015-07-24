@@ -6,14 +6,15 @@ require 'redcarpet'
 require 'singleton'
 require 'nokogiri'
 
+# CMS alternative: Content in markdown / Extract HTML and data for display
 class Cmless
   attr_reader :path
   attr_reader :title
 
   private
 
-  # You should use find_by_path rather than creating your own objects.
-  def initialize(file_path)
+  # You should use find_by_path rather than creating your own instances.
+  def initialize(file_path) # rubocop:disable Metrics/MethodLength
     @path = self.class.path_from_file_path(file_path)
     Nokogiri::HTML(Markdowner.instance.render(File.read(file_path))).tap do |doc|
       @title = doc.xpath('//h1').first.remove.text
@@ -33,8 +34,7 @@ class Cmless
 
       html_methods.each do |method|
         h2_name = method.to_s.gsub(/\_html$/, '').gsub('_', ' ').capitalize
-        variable_name = "@#{method}"
-        instance_variable_set(variable_name, Cmless.extract_html(doc, h2_name))
+        instance_variable_set("@#{method}", Cmless.extract_html(doc, h2_name))
       end
 
       doc.text.strip.tap do |extra|
@@ -120,12 +120,15 @@ class Cmless
   def self.extract_body_html(doc)
     siblings = []
     body = doc.xpath('//body').first
-    siblings.push(body.children.first.remove) while body.children.first
+    while body.children.first
+      siblings.push(body.children.first.remove)
+    end
     siblings.map(&:to_s).join.strip
   end
 
   # Utility class: (This could move.)
 
+  # Just a wrapper for Redcarpet
   class Markdowner
     include Singleton
 
