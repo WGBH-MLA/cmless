@@ -48,7 +48,7 @@ get '/collections', to: 'collections#index'
 get '/collections/*path', to: 'collections#show', constraints: allow_slashes
 ```
 
-In 'app/models/collection.rb`:
+In `app/models/collection.rb`:
 ```ruby
 class Collection < Cmless
   ROOT = File.expand_path('../views/collections', File.dirname(__FILE__))
@@ -56,7 +56,7 @@ class Collection < Cmless
 end
 ```
 
-In 'app/controllers/collections_controller.rb`:
+In `app/controllers/collections_controller.rb`:
 ```ruby
 class CollectionsController
   def index
