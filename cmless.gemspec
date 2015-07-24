@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'cmless'
-  s.version     = '0.0.2'
+  s.version     = '0.0.3'
   s.date        = '2015-07-24'
   s.summary     = 'CMS, but less'
   s.description = <<EOF
@@ -12,4 +12,7 @@ EOF
   s.files       = Dir.glob('lib/**/*')
   s.homepage    = 'https://github.com/WGBH/cmless'
   s.license     = 'MIT'
+  
+  s.add_runtime_dependency 'redcarpet', '~> 3.2.2'
+  s.add_runtime_dependency 'nokogiri', '~> 1.6'
 end
