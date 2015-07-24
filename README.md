@@ -72,6 +72,7 @@ end
 
 - Make your changes.
 - Run tests: `rspec`
+- Clean up formatting: `rubocop --auto-correct`
 - When it works, increment the version number.
 - Push changes to Github
 

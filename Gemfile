@@ -6,3 +6,4 @@ gem 'nokogiri', '~> 1.6'
 gem 'rspec', group: [:development, :test]
 gem 'pry', group: [:development]
 gem 'pry-nav', group: [:development]
+gem 'rubocop', group: [:development]
