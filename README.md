@@ -13,11 +13,9 @@ for access to the data.
 The test suite is the best place to look for examples right now.
 The basic idea is that you subclass `Cmless`, filling in a few blanks:
 
-- Location of the markdown files is specified via a class method:
+- Location of the markdown files is specified via a constant:
 ```
-def self.root_path
-  File.expand_path('../your/relative/path', File.dirname(__FILE__))
-end
+ROOT = File.expand_path('../your/relative/path', File.dirname(__FILE__))
 ```
 - Sections you want to extract are identified with `attr_read`s:
 ```
@@ -32,13 +30,49 @@ When all this is done you can pull back instances populated with data from the M
 Besides the accessors, you can also call
   - `#title`
   - `#ancestors`
-  - `#children` 
+  - `#children`
+  - `#path`
 
+## Example
+
+Let's assume you have a rails app, and will use Cmless for the "collection" pages.
+
+In `config/routes.rb`:
+```ruby
+allow_slashes = lambda { |req|
+  path = req.params['path']
+  path.match(/^[a-z0-9\/-]+$/) && !path.match(/^rails/)
+}
+
+get '/collections', to: 'collections#index'
+get '/collections/*path', to: 'collections#show', constraints: allow_slashes
+```
+
+In 'app/models/collection.rb`:
+```ruby
+class Collection < Cmless
+  ROOT = File.expand_path('../views/collections', File.dirname(__FILE__))
+  attr_reader :body_html
+end
+```
+
+In 'app/controllers/collections_controller.rb`:
+```ruby
+class CollectionsController
+  def index
+    @collections = Collection.all
+  end
+  def show
+    @collection = Collection.find_by_path(path)
+  end
+end
+```
 
 ## Development
 
 - Make your changes.
 - Run tests: `rspec`
+- Clean up formatting: `rubocop --auto-correct`
 - When it works, increment the version number.
 - Push changes to Github
 

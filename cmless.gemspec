@@ -1,9 +1,12 @@
 Gem::Specification.new do |s|
   s.name        = 'cmless'
-  s.version     = '0.0.1'
-  s.date        = '2015-07-22'
+  s.version     = '0.0.2'
+  s.date        = '2015-07-24'
   s.summary     = 'CMS, but less'
-  s.description = 'CMS alternative: Maintain content in markdown / Extract HTML and data for display'
+  s.description = <<EOF
+CMS alternative: Content in markdown / Extract HTML and data for display
+EOF
+  
   s.authors     = ['Chuck McCallum']
   s.email       = 'chuck_mccallum@wgbh.org'
   s.files       = Dir.glob('lib/**/*')
