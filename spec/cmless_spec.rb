@@ -7,9 +7,7 @@ describe Cmless do
     describe 'basic' do
       
       class Basic < Cmless
-        def self.root_path
-          File.expand_path('fixtures/good/basic', File.dirname(__FILE__))
-        end
+        ROOT = File.expand_path('fixtures/good/basic', File.dirname(__FILE__))
         attr_reader :head_html
         attr_reader :summary_html
         attr_reader :can_be_multi_word_html
@@ -46,10 +44,7 @@ describe Cmless do
     describe 'body' do
       
       class Body < Cmless
-        def self.root_path
-          File.expand_path('fixtures/good/body', File.dirname(__FILE__))
-        end
-        
+        ROOT = File.expand_path('fixtures/good/body', File.dirname(__FILE__))
         attr_reader :body_html
       end
       
@@ -78,9 +73,7 @@ describe Cmless do
     describe 'hierarchical' do
   
       class Hierarchy < Cmless
-        def self.root_path
-          File.expand_path('fixtures/good/hierarchy', File.dirname(__FILE__))
-        end
+        ROOT = File.expand_path('fixtures/good/hierarchy', File.dirname(__FILE__))
       end
 
       grandchild = Hierarchy.find_by_path('parent/child/grandchild')
@@ -114,10 +107,7 @@ describe Cmless do
     
     describe 'misspelled h2' do
       class WrongName < Cmless
-        def self.root_path
-          File.expand_path('fixtures/bad/wrong-name', File.dirname(__FILE__))
-        end
-
+        ROOT = File.expand_path('fixtures/bad/wrong-name', File.dirname(__FILE__))
         attr_reader :summary_html
         attr_reader :author_html
       end
@@ -129,9 +119,7 @@ describe Cmless do
     
     describe 'extra cruft' do
       class ExtraCruft < Cmless
-        def self.root_path
-          File.expand_path('fixtures/bad/extra-cruft', File.dirname(__FILE__))
-        end
+        ROOT = File.expand_path('fixtures/bad/extra-cruft', File.dirname(__FILE__))
       end
       
       it 'errors' do
@@ -141,19 +129,17 @@ describe Cmless do
     
     describe 'missing #root_path' do
       class MissingRootPath < Cmless
-        # What happens if we forget "def self.root_path"?
+        # What happens if we forget ROOT?
       end
       
       it 'errors' do
-        expect { MissingRootPath.find_by_path('does-not-matter') }.to raise_error(/undefined method `root_path'/)
+        expect { MissingRootPath.find_by_path('does-not-matter') }.to raise_error(/uninitialized constant MissingRootPath::ROOT/)
       end
     end
     
     describe 'bad #root_path' do
       class BadRootPath < Cmless
-        def self.root_path
-          '/no/such/path'
-        end
+        ROOT = '/no/such/path'
       end
       
       it 'errors' do

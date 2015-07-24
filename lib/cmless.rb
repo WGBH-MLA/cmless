@@ -71,14 +71,18 @@ class Cmless
   
   # Class methods:
   
+  def self.all
+    self.objects_by_path.values
+  end
+  
   def self.objects_by_path
     @objects_by_path ||=
       begin
-        unless File.directory?(self.root_path)
-          raise StandardError.new("#{self.root_path} is not a directory")
+        unless File.directory?(self::ROOT)
+          raise StandardError.new("#{self::ROOT} is not a directory")
         end
         Hash[
-          Dir[Pathname(self.root_path) + '**/*.md'].sort.map do |path|
+          Dir[Pathname(self::ROOT) + '**/*.md'].sort.map do |path|
             object = self.new(path)
             [object.path, object]
           end
@@ -87,11 +91,11 @@ class Cmless
   end
   
   def self.find_by_path(path)
-    self.objects_by_path[path] || raise(IndexError.new("'#{path}' is not a valid path under '#{self.root_path}'; Expected one of #{self.objects_by_path.keys}"))
+    self.objects_by_path[path] || raise(IndexError.new("'#{path}' is not a valid path under '#{self::ROOT}'; Expected one of #{self.objects_by_path.keys}"))
   end
 
   def self.path_from_file_path(file_path)
-    file_path.to_s.gsub(self.root_path.to_s+'/', '').gsub(/\.md$/, '')
+    file_path.to_s.gsub(self::ROOT+'/', '').gsub(/\.md$/, '')
   end
   
   def self.extract_html(doc, title)
