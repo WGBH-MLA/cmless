@@ -64,11 +64,11 @@ describe Cmless do
       end
     end
 
+    class Hierarchy < Cmless
+      ROOT = File.expand_path('fixtures/good/hierarchy', File.dirname(__FILE__))
+    end
+    
     describe 'hierarchical' do
-      class Hierarchy < Cmless
-        ROOT = File.expand_path('fixtures/good/hierarchy', File.dirname(__FILE__))
-      end
-
       grandchild = Hierarchy.find_by_path('parent/child/grandchild')
 
       assertions = {
@@ -90,6 +90,26 @@ describe Cmless do
 
       it 'tests everthing' do
         expect(assertions.keys.sort).to eq((Hierarchy.instance_methods - Object.instance_methods).sort)
+      end
+    end
+    
+    describe 'class methods' do
+      
+      paths = [
+          'parent', 'parent/child', 'parent/child/grandchild',
+          'parent/child/grandchild/greatgrandchild1',
+          'parent/child/grandchild/greatgrandchild2']
+      
+      it '#all works' do
+        expect(Hierarchy.all.map(&:path).sort).to eq(paths)
+      end
+      
+      it '#objects_by_path works' do
+        expect(Hierarchy.objects_by_path.keys.sort).to eq(paths)
+      end
+      
+      it '#find_by_path works' do
+        expect(Hierarchy.find_by_path('parent').path).to eq('parent')
       end
     end
   end
