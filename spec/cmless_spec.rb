@@ -13,7 +13,7 @@ describe Cmless do
       basic = Basic.find_by_path('basic')
 
       assertions = {
-        title: 'Basic!',
+        title_html: '<a href="http://example.org/work">links in title</a> <strong>&amp; style!</strong>',
         path: 'basic',
         ancestors: [],
         children: [],
@@ -29,11 +29,25 @@ describe Cmless do
       end
 
       it 'tests everthing' do
-        expect(assertions.keys.sort).to eq((Basic.instance_methods - Object.instance_methods).sort)
+        expect(assertions.keys.sort)
+          .to eq((Basic.instance_methods - Object.instance_methods).sort)
       end
 
       it 'raises an error for bad paths' do
         expect { Basic.find_by_path('no/such/path') }.to raise_error(IndexError)
+      end
+
+      describe 'error on modification' do
+        it 'does not have setters' do
+          expect { Basic.find_by_path('basic').title_html = 'new title' }
+            .to raise_error(NoMethodError)
+        end
+        xit 'errors on direct attribute access' do
+          # Freezing the objects after creation doesn't work right now
+          # because @ancestors and @children are only filled in lazily.
+          expect { Basic.find_by_path('basic').instance_variable_set(:@title_html, 'new title') }
+            .to raise_error
+        end
       end
     end
 
@@ -46,7 +60,7 @@ describe Cmless do
       body = Body.find_by_path('body')
 
       assertions = {
-        title: 'Just a title',
+        title_html: 'Just a title',
         path: 'body',
         ancestors: [],
         children: [],
@@ -60,19 +74,20 @@ describe Cmless do
       end
 
       it 'tests everthing' do
-        expect(assertions.keys.sort).to eq((Body.instance_methods - Object.instance_methods).sort)
+        expect(assertions.keys.sort)
+          .to eq((Body.instance_methods - Object.instance_methods).sort)
       end
     end
 
     class Hierarchy < Cmless
       ROOT = File.expand_path('fixtures/good/hierarchy', File.dirname(__FILE__))
     end
-    
+
     describe 'hierarchical' do
       grandchild = Hierarchy.find_by_path('parent/child/grandchild')
 
       assertions = {
-        title: 'Grandchild!',
+        title_html: 'Grandchild!',
         path: 'parent/child/grandchild',
         ancestors: [
           Hierarchy.find_by_path('parent'),
@@ -89,27 +104,37 @@ describe Cmless do
       end
 
       it 'tests everthing' do
-        expect(assertions.keys.sort).to eq((Hierarchy.instance_methods - Object.instance_methods).sort)
+        expect(assertions.keys.sort)
+          .to eq((Hierarchy.instance_methods - Object.instance_methods).sort)
       end
     end
-    
+
     describe 'class methods' do
-      
       paths = [
-          'parent', 'parent/child', 'parent/child/grandchild',
-          'parent/child/grandchild/greatgrandchild1',
-          'parent/child/grandchild/greatgrandchild2']
-      
+        'parent', 'parent/child', 'parent/child/grandchild',
+        'parent/child/grandchild/greatgrandchild1',
+        'parent/child/grandchild/greatgrandchild2']
+      title_htmls = [
+        'Parent!', 'Child!', 'Grandchild!',
+        'Greatgrandchild1!', 'Greatgrandchild2!']
+
       it '#all works' do
         expect(Hierarchy.all.map(&:path).sort).to eq(paths)
       end
-      
+
       it '#objects_by_path works' do
         expect(Hierarchy.objects_by_path.keys.sort).to eq(paths)
       end
-      
+
       it '#find_by_path works' do
         expect(Hierarchy.find_by_path('parent').path).to eq('parent')
+      end
+
+      describe 'Enumerable' do
+        it 'supports #map' do
+          expect(Hierarchy.map(&:path)).to eq(paths)
+          expect(Hierarchy.map(&:title_html)).to eq(title_htmls)
+        end
       end
     end
   end
@@ -123,7 +148,8 @@ describe Cmless do
       end
 
       it 'errors' do
-        expect { WrongName.find_by_path('wrong-name') }.to raise_error(/Can't find header/)
+        expect { WrongName.find_by_path('wrong-name') }
+          .to raise_error(/Can't find header/)
       end
     end
 
@@ -133,7 +159,8 @@ describe Cmless do
       end
 
       it 'errors' do
-        expect { ExtraCruft.find_by_path('extra-cruft') }.to raise_error(/Extra Cruft\\n\\nShould cause an error/)
+        expect { ExtraCruft.find_by_path('extra-cruft') }
+          .to raise_error(/Extra Cruft\\n\\nShould cause an error/)
       end
     end
 
@@ -143,7 +170,8 @@ describe Cmless do
       end
 
       it 'errors' do
-        expect { MissingRootPath.find_by_path('does-not-matter') }.to raise_error(/uninitialized constant MissingRootPath::ROOT/)
+        expect { MissingRootPath.find_by_path('does-not-matter') }
+          .to raise_error(/uninitialized constant MissingRootPath::ROOT/)
       end
     end
 
@@ -153,7 +181,8 @@ describe Cmless do
       end
 
       it 'errors' do
-        expect { BadRootPath.find_by_path('does-not-matter') }.to raise_error(/is not a directory/)
+        expect { BadRootPath.find_by_path('does-not-matter') }
+          .to raise_error(/is not a directory/)
       end
     end
   end

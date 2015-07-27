@@ -12,19 +12,14 @@ Metrics/AbcSize:
 # Offense count: 14
 # Configuration parameters: AllowURI, URISchemes.
 Metrics/LineLength:
-  Max: 145
-
-# Offense count: 1
-# Configuration parameters: CountComments.
-Metrics/MethodLength:
-  Max: 12
-
-# Offense count: 6
-Style/Documentation:
-  Enabled: false
+  Max: 110
 
 # Offense count: 1
 Style/MultilineBlockChain:
+  Enabled: false
+
+# Offense count: 6
+Style/Documentation:
   Enabled: false
 
 # Offense count: 3
@@ -42,13 +37,3 @@ Style/RegexpLiteral:
 Style/RescueModifier:
   Enabled: false
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/TrailingWhitespace:
-  Enabled: false
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: MaxLineLength.
-Style/WhileUntilModifier:
-  Enabled: false
