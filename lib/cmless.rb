@@ -9,7 +9,7 @@ require 'nokogiri'
 # CMS alternative: Content in markdown / Extract HTML and data for display
 class Cmless
   attr_reader :path
-  attr_reader :title
+  attr_reader :title_html
 
   private
 
@@ -17,10 +17,15 @@ class Cmless
   def initialize(file_path) # rubocop:disable Metrics/MethodLength
     @path = self.class.path_from_file_path(file_path)
     Nokogiri::HTML(Markdowner.instance.render(File.read(file_path))).tap do |doc|
-      @title = doc.xpath('//h1').first.remove.text
-
       html_methods = self.class.instance_methods
                      .select { |method| method.to_s.match(/\_html$/) }
+                     
+      doc.xpath('//h1').first.tap do |h1|
+        @title_html = h1.inner_html
+        h1.remove
+        html_methods.delete(:title_html)
+      end
+      
 
       if html_methods.include?(:head_html)
         @head_html = Cmless.extract_head_html(doc)
