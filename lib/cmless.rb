@@ -23,12 +23,12 @@ class Cmless
                      .select { |method| method.to_s.match(/\_html$/) }
 
       if html_methods.include?(:head_html)
-        instance_variable_set('@head_html', Cmless.extract_head_html(doc))
+        @head_html = Cmless.extract_head_html(doc)
         html_methods.delete(:head_html)
       end
 
       if html_methods.include?(:body_html)
-        instance_variable_set('@body_html', Cmless.extract_body_html(doc))
+        @body_html = Cmless.extract_body_html(doc)
         html_methods.delete(:body_html)
       end
 
@@ -67,67 +67,76 @@ class Cmless
     end
   end
 
-  # Class methods:
+  class << self
+    include Enumerable
 
-  def self.all
-    objects_by_path.values
-  end
+    def each(&block)
+      self.all.each do |cmless|
+        block.call(cmless)
+      end
+    end
+    
+    def all
+      objects_by_path.values
+    end
 
-  def self.objects_by_path
-    @objects_by_path ||=
-      begin
-        unless File.directory?(self::ROOT)
-          fail StandardError.new("#{self::ROOT} is not a directory")
-        end
-        Hash[
-          Dir[Pathname(self::ROOT) + '**/*.md'].sort.map do |path|
-            object = new(path)
-            [object.path, object]
+    def find_by_path(path)
+      objects_by_path[path] || fail(IndexError.new("'#{path}' is not a valid path under '#{self::ROOT}'; Expected one of #{objects_by_path.keys}"))
+    end
+    
+    def objects_by_path
+      @objects_by_path ||=
+        begin
+          unless File.directory?(self::ROOT)
+            fail StandardError.new("#{self::ROOT} is not a directory")
           end
-        ]
+          Hash[
+            Dir[Pathname(self::ROOT) + '**/*.md'].sort.map do |path|
+              object = new(path)
+              [object.path, object]
+            end
+          ]
+        end
+    end
+    
+    # These are just used by the initialize. Perhaps there is a better place.
+    
+    def path_from_file_path(file_path)
+      file_path.to_s.gsub(self::ROOT + '/', '').gsub(/\.md$/, '')
+    end
+
+    def extract_html(doc, title)
+      following_siblings = []
+      doc.xpath("//h2[text()='#{title}']").first.tap do |header|
+        fail IndexError.new("Can't find header '#{title}'") unless header
+        while header.next_element && !header.next_element.name.match(/h2/)
+          following_siblings.push(header.next_element.remove)
+        end
+        header.remove
       end
-  end
+      following_siblings.map(&:to_s).join
+    end
 
-  def self.find_by_path(path)
-    objects_by_path[path] || fail(IndexError.new("'#{path}' is not a valid path under '#{self::ROOT}'; Expected one of #{objects_by_path.keys}"))
-  end
-
-  def self.path_from_file_path(file_path)
-    file_path.to_s.gsub(self::ROOT + '/', '').gsub(/\.md$/, '')
-  end
-
-  def self.extract_html(doc, title)
-    following_siblings = []
-    doc.xpath("//h2[text()='#{title}']").first.tap do |header|
-      fail IndexError.new("Can't find header '#{title}'") unless header
-      while header.next_element && !header.next_element.name.match(/h2/)
-        following_siblings.push(header.next_element.remove)
+    def extract_head_html(doc)
+      siblings = []
+      body = doc.xpath('//body').first
+      while body.children.first && !body.children.first.name.match(/h2/)
+        siblings.push(body.children.first.remove)
       end
-      header.remove
+      siblings.map(&:to_s).join.strip
     end
-    following_siblings.map(&:to_s).join
-  end
 
-  def self.extract_head_html(doc)
-    siblings = []
-    body = doc.xpath('//body').first
-    while body.children.first && !body.children.first.name.match(/h2/)
-      siblings.push(body.children.first.remove)
+    def extract_body_html(doc)
+      siblings = []
+      body = doc.xpath('//body').first
+      while body.children.first
+        siblings.push(body.children.first.remove)
+      end
+      siblings.map(&:to_s).join.strip
     end
-    siblings.map(&:to_s).join.strip
   end
-
-  def self.extract_body_html(doc)
-    siblings = []
-    body = doc.xpath('//body').first
-    while body.children.first
-      siblings.push(body.children.first.remove)
-    end
-    siblings.map(&:to_s).join.strip
-  end
-
+  
   # Utility class: (This could move.)
-
   # Just a wrapper for Redcarpet
   class Markdowner
     include Singleton

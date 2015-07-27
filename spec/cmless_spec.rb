@@ -35,6 +35,19 @@ describe Cmless do
       it 'raises an error for bad paths' do
         expect { Basic.find_by_path('no/such/path') }.to raise_error(IndexError)
       end
+      
+      describe 'error on modification' do
+        it 'does not have setters' do
+          expect { Basic.find_by_path('basic').title = 'new title' }.
+            to raise_error(NoMethodError)
+        end
+        xit 'errors on direct attribute access' do
+          # Freezing the objects after creation doesn't work right now
+          # because @ancestors and @children are only filled in lazily.
+          expect { Basic.find_by_path('basic').instance_variable_set(:@title, 'new title')}.
+            to raise_error
+        end
+      end
     end
 
     describe 'body' do
@@ -91,6 +104,7 @@ describe Cmless do
       it 'tests everthing' do
         expect(assertions.keys.sort).to eq((Hierarchy.instance_methods - Object.instance_methods).sort)
       end
+      
     end
     
     describe 'class methods' do
@@ -99,6 +113,9 @@ describe Cmless do
           'parent', 'parent/child', 'parent/child/grandchild',
           'parent/child/grandchild/greatgrandchild1',
           'parent/child/grandchild/greatgrandchild2']
+      titles = [
+        "Parent!", "Child!", "Grandchild!", 
+        "Greatgrandchild1!", "Greatgrandchild2!"]
       
       it '#all works' do
         expect(Hierarchy.all.map(&:path).sort).to eq(paths)
@@ -110,6 +127,13 @@ describe Cmless do
       
       it '#find_by_path works' do
         expect(Hierarchy.find_by_path('parent').path).to eq('parent')
+      end
+      
+      describe 'Enumerable' do
+        it 'supports #map' do
+          expect(Hierarchy.map { |cmless| cmless.path }).to eq(paths)
+          expect(Hierarchy.map { |cmless| cmless.title }).to eq(titles)
+        end
       end
     end
   end
