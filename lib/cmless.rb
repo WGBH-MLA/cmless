@@ -7,7 +7,7 @@ require 'singleton'
 require 'nokogiri'
 
 # CMS alternative: Content in markdown / Extract HTML and data for display
-class Cmless
+class Cmless # rubocop:disable Metrics/ClassLength
   attr_reader :path
   attr_reader :title_html
 
@@ -19,13 +19,12 @@ class Cmless
     Nokogiri::HTML(Markdowner.instance.render(File.read(file_path))).tap do |doc|
       html_methods = self.class.instance_methods
                      .select { |method| method.to_s.match(/\_html$/) }
-                     
+
       doc.xpath('//h1').first.tap do |h1|
         @title_html = h1.inner_html
         h1.remove
         html_methods.delete(:title_html)
       end
-      
 
       if html_methods.include?(:head_html)
         @head_html = Cmless.extract_head_html(doc)
@@ -80,15 +79,18 @@ class Cmless
         block.call(cmless)
       end
     end
-    
+
     def all
       objects_by_path.values
     end
 
     def find_by_path(path)
-      objects_by_path[path] || fail(IndexError.new("'#{path}' is not a valid path under '#{self::ROOT}'; Expected one of #{objects_by_path.keys}"))
+      objects_by_path[path] ||
+        fail(IndexError.new(
+               "'#{path}' is not a valid path under '#{self::ROOT}'; " \
+                 "Expected one of #{objects_by_path.keys}"))
     end
-    
+
     def objects_by_path
       @objects_by_path ||=
         begin
@@ -103,9 +105,9 @@ class Cmless
           ]
         end
     end
-    
+
     # These are just used by the initialize. Perhaps there is a better place.
-    
+
     def path_from_file_path(file_path)
       file_path.to_s.gsub(self::ROOT + '/', '').gsub(/\.md$/, '')
     end
@@ -134,13 +136,11 @@ class Cmless
     def extract_body_html(doc)
       siblings = []
       body = doc.xpath('//body').first
-      while body.children.first
-        siblings.push(body.children.first.remove)
-      end
+      siblings.push(body.children.first.remove) while body.children.first
       siblings.map(&:to_s).join.strip
     end
   end
-  
+
   # Utility class: (This could move.)
   # Just a wrapper for Redcarpet
   class Markdowner

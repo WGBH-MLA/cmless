@@ -35,7 +35,7 @@ describe Cmless do
       it 'raises an error for bad paths' do
         expect { Basic.find_by_path('no/such/path') }.to raise_error(IndexError)
       end
-      
+
       describe 'error on modification' do
         it 'does not have setters' do
           expect { Basic.find_by_path('basic').title_html = 'new title' }
@@ -80,7 +80,7 @@ describe Cmless do
     class Hierarchy < Cmless
       ROOT = File.expand_path('fixtures/good/hierarchy', File.dirname(__FILE__))
     end
-    
+
     describe 'hierarchical' do
       grandchild = Hierarchy.find_by_path('parent/child/grandchild')
 
@@ -104,31 +104,29 @@ describe Cmless do
       it 'tests everthing' do
         expect(assertions.keys.sort).to eq((Hierarchy.instance_methods - Object.instance_methods).sort)
       end
-      
     end
-    
+
     describe 'class methods' do
-      
       paths = [
         'parent', 'parent/child', 'parent/child/grandchild',
         'parent/child/grandchild/greatgrandchild1',
         'parent/child/grandchild/greatgrandchild2']
       title_htmls = [
-        'Parent!', 'Child!', 'Grandchild!', 
+        'Parent!', 'Child!', 'Grandchild!',
         'Greatgrandchild1!', 'Greatgrandchild2!']
-      
+
       it '#all works' do
         expect(Hierarchy.all.map(&:path).sort).to eq(paths)
       end
-      
+
       it '#objects_by_path works' do
         expect(Hierarchy.objects_by_path.keys.sort).to eq(paths)
       end
-      
+
       it '#find_by_path works' do
         expect(Hierarchy.find_by_path('parent').path).to eq('parent')
       end
-      
+
       describe 'Enumerable' do
         it 'supports #map' do
           expect(Hierarchy.map(&:path)).to eq(paths)
