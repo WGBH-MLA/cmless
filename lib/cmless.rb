@@ -91,7 +91,7 @@ class Cmless # rubocop:disable Metrics/ClassLength
                  "Expected one of #{objects_by_path.keys}"))
     end
 
-    def objects_by_path
+    def objects_by_path # rubocop:disable Metrics/MethodLength
       @objects_by_path ||=
         begin
           unless File.directory?(self::ROOT)

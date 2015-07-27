@@ -29,7 +29,8 @@ describe Cmless do
       end
 
       it 'tests everthing' do
-        expect(assertions.keys.sort).to eq((Basic.instance_methods - Object.instance_methods).sort)
+        expect(assertions.keys.sort)
+          .to eq((Basic.instance_methods - Object.instance_methods).sort)
       end
 
       it 'raises an error for bad paths' do
@@ -73,7 +74,8 @@ describe Cmless do
       end
 
       it 'tests everthing' do
-        expect(assertions.keys.sort).to eq((Body.instance_methods - Object.instance_methods).sort)
+        expect(assertions.keys.sort)
+          .to eq((Body.instance_methods - Object.instance_methods).sort)
       end
     end
 
@@ -102,7 +104,8 @@ describe Cmless do
       end
 
       it 'tests everthing' do
-        expect(assertions.keys.sort).to eq((Hierarchy.instance_methods - Object.instance_methods).sort)
+        expect(assertions.keys.sort)
+          .to eq((Hierarchy.instance_methods - Object.instance_methods).sort)
       end
     end
 
@@ -145,7 +148,8 @@ describe Cmless do
       end
 
       it 'errors' do
-        expect { WrongName.find_by_path('wrong-name') }.to raise_error(/Can't find header/)
+        expect { WrongName.find_by_path('wrong-name') }
+          .to raise_error(/Can't find header/)
       end
     end
 
@@ -155,7 +159,8 @@ describe Cmless do
       end
 
       it 'errors' do
-        expect { ExtraCruft.find_by_path('extra-cruft') }.to raise_error(/Extra Cruft\\n\\nShould cause an error/)
+        expect { ExtraCruft.find_by_path('extra-cruft') }
+          .to raise_error(/Extra Cruft\\n\\nShould cause an error/)
       end
     end
 
@@ -165,7 +170,8 @@ describe Cmless do
       end
 
       it 'errors' do
-        expect { MissingRootPath.find_by_path('does-not-matter') }.to raise_error(/uninitialized constant MissingRootPath::ROOT/)
+        expect { MissingRootPath.find_by_path('does-not-matter') }
+          .to raise_error(/uninitialized constant MissingRootPath::ROOT/)
       end
     end
 
@@ -175,7 +181,8 @@ describe Cmless do
       end
 
       it 'errors' do
-        expect { BadRootPath.find_by_path('does-not-matter') }.to raise_error(/is not a directory/)
+        expect { BadRootPath.find_by_path('does-not-matter') }
+          .to raise_error(/is not a directory/)
       end
     end
   end
