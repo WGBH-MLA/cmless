@@ -13,6 +13,7 @@ describe Cmless do
       basic = Basic.find_by_path('basic')
 
       assertions = {
+        title: 'links in title & style!',
         title_html: '<a href="http://example.org/work">links in title</a> <strong>&amp; style!</strong>',
         path: 'basic',
         ancestors: [],
@@ -60,6 +61,7 @@ describe Cmless do
       body = Body.find_by_path('body')
 
       assertions = {
+        title: 'Just a title',
         title_html: 'Just a title',
         path: 'body',
         ancestors: [],
@@ -87,6 +89,7 @@ describe Cmless do
       grandchild = Hierarchy.find_by_path('parent/child/grandchild')
 
       assertions = {
+        title: 'Grandchild!',
         title_html: 'Grandchild!',
         path: 'parent/child/grandchild',
         ancestors: [

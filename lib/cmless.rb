@@ -9,6 +9,7 @@ require 'nokogiri'
 # CMS alternative: Content in markdown / Extract HTML and data for display
 class Cmless # rubocop:disable Metrics/ClassLength
   attr_reader :path
+  attr_reader :title
   attr_reader :title_html
 
   private
@@ -22,6 +23,7 @@ class Cmless # rubocop:disable Metrics/ClassLength
 
       doc.xpath('//h1').first.tap do |h1|
         @title_html = h1.inner_html
+        @title = h1.text
         h1.remove
         html_methods.delete(:title_html)
       end
