@@ -76,7 +76,7 @@ class Cmless
     include Enumerable
 
     def each(&block)
-      self.all.each do |cmless|
+      all.each do |cmless|
         block.call(cmless)
       end
     end
