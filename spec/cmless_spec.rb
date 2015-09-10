@@ -152,7 +152,7 @@ describe Cmless do
 
       it 'errors' do
         expect { WrongName.find_by_path('wrong-name') }
-          .to raise_error(/Can't find header/)
+          .to raise_error(/Can't find header 'Summary' in .*wrong-name/)
       end
     end
 
