@@ -40,7 +40,7 @@ class Cmless # rubocop:disable Metrics/ClassLength
 
       html_methods.each do |method|
         h2_name = method.to_s.gsub(/\_html$/, '').gsub('_', ' ').capitalize
-        instance_variable_set("@#{method}", Cmless.extract_html(doc, h2_name))
+        instance_variable_set("@#{method}", Cmless.extract_html(doc, h2_name))  
       end
 
       doc.text.strip.tap do |extra|
@@ -48,6 +48,8 @@ class Cmless # rubocop:disable Metrics/ClassLength
         fail("#{file_path} has extra unused text: '#{escaped}'") unless extra == ''
       end
     end
+  rescue => e
+    raise(e.message + ' in ' + file_path)
   end
 
   public
