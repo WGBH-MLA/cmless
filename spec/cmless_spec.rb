@@ -17,6 +17,7 @@ describe Cmless do
         title_html: '<a href="http://example.org/work">links in title</a> <strong>&amp; style!</strong>',
         path: 'basic',
         ancestors: [],
+        parent: nil,
         children: [],
         head_html: '<p>Head goes here.</p>',
         can_be_multi_word_html: '<p>Should work, too.</p>',
@@ -65,6 +66,7 @@ describe Cmless do
         title_html: 'Just a title',
         path: 'body',
         ancestors: [],
+        parent: nil,
         children: [],
         body_html: "<p>and a body</p>\n\n<h2 id=\"which\">which</h2>\n\n<p>includes everything.</p>"
       }
@@ -83,6 +85,7 @@ describe Cmless do
 
     class Hierarchy < Cmless
       ROOT = File.expand_path('fixtures/good/hierarchy', File.dirname(__FILE__))
+      attr_reader :inherited_html
     end
 
     describe 'hierarchical' do
@@ -95,9 +98,11 @@ describe Cmless do
         ancestors: [
           Hierarchy.find_by_path('parent'),
           Hierarchy.find_by_path('parent/child')],
+        parent: Hierarchy.find_by_path('parent/child'),
         children: [
           Hierarchy.find_by_path('parent/child/grandchild/greatgrandchild1'),
-          Hierarchy.find_by_path('parent/child/grandchild/greatgrandchild2')]
+          Hierarchy.find_by_path('parent/child/grandchild/greatgrandchild2')],
+        inherited_html: '<p>All descendents get this.</p>'
       }
 
       assertions.each do |method, value|
@@ -152,7 +157,7 @@ describe Cmless do
 
       it 'errors' do
         expect { WrongName.find_by_path('wrong-name') }
-          .to raise_error(/Can't find header 'Summary' in .*wrong-name/)
+          .to raise_error(/Can't find 'summary_html' in .*wrong-name/)
       end
     end
 

@@ -7,7 +7,7 @@ require 'singleton'
 require 'nokogiri'
 
 # CMS alternative: Content in markdown / Extract HTML and data for display
-class Cmless # rubocop:disable Metrics/ClassLength
+class Cmless
   attr_reader :path
   attr_reader :title
   attr_reader :title_html
@@ -15,7 +15,7 @@ class Cmless # rubocop:disable Metrics/ClassLength
   private
 
   # You should use find_by_path rather than creating your own instances.
-  def initialize(file_path) # rubocop:disable Metrics/MethodLength
+  def initialize(file_path)
     @path = self.class.path_from_file_path(file_path)
     Nokogiri::HTML(Markdowner.instance.render(File.read(file_path))).tap do |doc|
       html_methods = self.class.instance_methods
@@ -40,7 +40,13 @@ class Cmless # rubocop:disable Metrics/ClassLength
 
       html_methods.each do |method|
         h2_name = method.to_s.gsub(/\_html$/, '').gsub('_', ' ').capitalize
-        instance_variable_set("@#{method}", Cmless.extract_html(doc, h2_name))  
+        value = Cmless.extract_html(doc, h2_name)
+        value ||= if parent # Look at parent if missing on self.
+          parent.send(method)
+        else
+          fail(IndexError.new("Can't find '#{method}'"))
+        end
+        instance_variable_set("@#{method}", value)
       end
 
       doc.text.strip.tap do |extra|
@@ -56,11 +62,16 @@ class Cmless # rubocop:disable Metrics/ClassLength
 
   # Instance methods:
 
+  def parent
+    ancestors.last
+  end
+
   def ancestors
     @ancestors ||= begin
       split = path.split('/')
       (1..split.size - 1).to_a.map do |i|
-        self.class.objects_by_path[split[0, i].join('/')]
+        # to avoid infinite recursion, only look at the ones already loaded.
+        self.class.objects_by_path_in_progress[split[0, i].join('/')]
       end
     end
   end
@@ -95,18 +106,22 @@ class Cmless # rubocop:disable Metrics/ClassLength
                  "Expected one of #{objects_by_path.keys}"))
     end
 
-    def objects_by_path # rubocop:disable Metrics/MethodLength
+    def objects_by_path_in_progress
+      @object_by_path_in_progress
+    end
+
+    def objects_by_path
       @objects_by_path ||=
         begin
           unless File.directory?(self::ROOT)
             fail StandardError.new("#{self::ROOT} is not a directory")
           end
-          Hash[
-            Dir[Pathname(self::ROOT) + '**/*.md'].sort.map do |path|
-              object = new(path)
-              [object.path, object]
-            end
-          ]
+          @object_by_path_in_progress = {}
+          Dir[Pathname(self::ROOT) + '**/*.md'].sort.each do |full_path|
+            object = new(full_path)
+            @object_by_path_in_progress[object.path] = object
+          end
+          @object_by_path_in_progress
         end
     end
 
@@ -119,7 +134,7 @@ class Cmless # rubocop:disable Metrics/ClassLength
     def extract_html(doc, title)
       following_siblings = []
       doc.xpath("//h2[text()='#{title}']").first.tap do |header|
-        fail IndexError.new("Can't find header '#{title}'") unless header
+        return nil unless header
         while header.next_element && !header.next_element.name.match(/h2/)
           following_siblings.push(header.next_element.remove)
         end
