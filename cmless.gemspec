@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'cmless'
   s.version     = '0.0.7'
-  s.date        = '2015-09-10'
+  s.date        = '2015-09-16'
   s.summary     = 'CMS, but less'
   s.description = <<EOF
 CMS alternative: Content in markdown / Extract HTML and data for display
