@@ -40,7 +40,13 @@ class Cmless
 
       html_methods.each do |method|
         h2_name = method.to_s.gsub(/\_html$/, '').gsub('_', ' ').capitalize
-        instance_variable_set("@#{method}", Cmless.extract_html(doc, h2_name) || (parent ? parent.send(method) : fail(IndexError.new("Can't find '#{method}'"))))
+        value = Cmless.extract_html(doc, h2_name)
+        value ||= if parent # Look at parent if missing on self.
+          parent.send(method)
+        else
+          fail(IndexError.new("Can't find '#{method}'"))
+        end
+        instance_variable_set("@#{method}", value)
       end
 
       doc.text.strip.tap do |extra|
