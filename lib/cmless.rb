@@ -7,7 +7,7 @@ require 'singleton'
 require 'nokogiri'
 
 # CMS alternative: Content in markdown / Extract HTML and data for display
-class Cmless # rubocop:disable Metrics/ClassLength
+class Cmless
   attr_reader :path
   attr_reader :title
   attr_reader :title_html
@@ -15,7 +15,7 @@ class Cmless # rubocop:disable Metrics/ClassLength
   private
 
   # You should use find_by_path rather than creating your own instances.
-  def initialize(file_path) # rubocop:disable Metrics/MethodLength
+  def initialize(file_path)
     @path = self.class.path_from_file_path(file_path)
     Nokogiri::HTML(Markdowner.instance.render(File.read(file_path))).tap do |doc|
       html_methods = self.class.instance_methods
@@ -40,8 +40,7 @@ class Cmless # rubocop:disable Metrics/ClassLength
 
       html_methods.each do |method|
         h2_name = method.to_s.gsub(/\_html$/, '').gsub('_', ' ').capitalize
-        instance_variable_set("@#{method}", Cmless.extract_html(doc, h2_name) \
-          || ( parent ? parent.send(method) : raise(IndexError.new("Can't find '#{method}'")) ))
+        instance_variable_set("@#{method}", Cmless.extract_html(doc, h2_name) || (parent ? parent.send(method) : fail(IndexError.new("Can't find '#{method}'"))))
       end
 
       doc.text.strip.tap do |extra|
@@ -56,7 +55,7 @@ class Cmless # rubocop:disable Metrics/ClassLength
   public
 
   # Instance methods:
-  
+
   def parent
     ancestors.last
   end
@@ -83,7 +82,7 @@ class Cmless # rubocop:disable Metrics/ClassLength
 
   class << self
     include Enumerable
-    
+
     def each(&block)
       all.each do |cmless|
         block.call(cmless)
@@ -93,7 +92,7 @@ class Cmless # rubocop:disable Metrics/ClassLength
     def all
       objects_by_path.values
     end
-    
+
     def find_by_path(path)
       (@object_by_path_in_progress && @object_by_path_in_progress[path]) ||
         objects_by_path[path] ||
@@ -101,12 +100,12 @@ class Cmless # rubocop:disable Metrics/ClassLength
                "'#{path}' is not a valid path under '#{self::ROOT}'; " \
                  "Expected one of #{objects_by_path.keys}"))
     end
-    
+
     def objects_by_path_in_progress
       @object_by_path_in_progress
     end
 
-    def objects_by_path # rubocop:disable Metrics/MethodLength
+    def objects_by_path
       @objects_by_path ||=
         begin
           unless File.directory?(self::ROOT)
@@ -120,7 +119,7 @@ class Cmless # rubocop:disable Metrics/ClassLength
           @object_by_path_in_progress
         end
     end
-      
+
     # These are just used by the initialize. Perhaps there is a better place.
 
     def path_from_file_path(file_path)

@@ -102,7 +102,7 @@ describe Cmless do
         children: [
           Hierarchy.find_by_path('parent/child/grandchild/greatgrandchild1'),
           Hierarchy.find_by_path('parent/child/grandchild/greatgrandchild2')],
-        inherited_html: '<p>All descendents get this.</p>' 
+        inherited_html: '<p>All descendents get this.</p>'
       }
 
       assertions.each do |method, value|
