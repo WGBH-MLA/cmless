@@ -40,7 +40,8 @@ class Cmless # rubocop:disable Metrics/ClassLength
 
       html_methods.each do |method|
         h2_name = method.to_s.gsub(/\_html$/, '').gsub('_', ' ').capitalize
-        instance_variable_set("@#{method}", Cmless.extract_html(doc, h2_name))  
+        instance_variable_set("@#{method}", Cmless.extract_html(doc, h2_name) \
+          || ( parent ? parent.send(method) : raise(IndexError.new("Can't find '#{method}'")) ))
       end
 
       doc.text.strip.tap do |extra|
@@ -55,6 +56,10 @@ class Cmless # rubocop:disable Metrics/ClassLength
   public
 
   # Instance methods:
+  
+  def parent
+    ancestors.last
+  end
 
   def ancestors
     @ancestors ||= begin
@@ -120,7 +125,7 @@ class Cmless # rubocop:disable Metrics/ClassLength
     def extract_html(doc, title)
       following_siblings = []
       doc.xpath("//h2[text()='#{title}']").first.tap do |header|
-        fail IndexError.new("Can't find header '#{title}'") unless header
+        return nil unless header
         while header.next_element && !header.next_element.name.match(/h2/)
           following_siblings.push(header.next_element.remove)
         end
