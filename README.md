@@ -30,6 +30,7 @@ atty_reader :reviews_html
 When all this is done you can pull back instances populated with data from the Markdown.
 Besides the accessors, you can also call
   - `#ancestors`
+  - `#parent`
   - `#children`
   - `#path`
 
@@ -37,6 +38,9 @@ These *class* methods are also available:
   - `#find_by_path`
   - `#all`
   - `#each` and everything else that comes with `Enumerable`.
+
+If you have a hierarchical structure, note that higher level documents may
+specify defaults which are inherited by all descendents.
 
 ## Example
 
