@@ -2,7 +2,7 @@ require_relative '../lib/cmless.rb'
 
 describe Cmless do
   describe 'correctly configured' do
-    describe 'basic' do
+    describe 'basic subsection extraction' do
       class Basic < Cmless
         ROOT = File.expand_path('fixtures/good/basic', File.dirname(__FILE__))
         attr_reader :head_html
@@ -44,16 +44,16 @@ describe Cmless do
           expect { Basic.find_by_path('basic').title_html = 'new title' }
             .to raise_error(NoMethodError)
         end
-        xit 'errors on direct attribute access' do
-          # Freezing the objects after creation doesn't work right now
-          # because @ancestors and @children are only filled in lazily.
-          expect { Basic.find_by_path('basic').instance_variable_set(:@title_html, 'new title') }
-            .to raise_error
-        end
+#        xit 'errors on direct attribute access' do
+#          # Freezing the objects after creation doesn't work right now
+#          # because @ancestors and @children are only filled in lazily.
+#          expect { Basic.find_by_path('basic').instance_variable_set(:@title_html, 'new title') }
+#            .to raise_error
+#        end
       end
     end
 
-    describe 'body' do
+    describe 'body (but no subsection) extraction' do
       class Body < Cmless
         ROOT = File.expand_path('fixtures/good/body', File.dirname(__FILE__))
         attr_reader :body_html
@@ -83,65 +83,67 @@ describe Cmless do
       end
     end
 
-    class Hierarchy < Cmless
-      ROOT = File.expand_path('fixtures/good/hierarchy', File.dirname(__FILE__))
-      attr_reader :inherited_html
-    end
+    describe 'hierarchical relations' do
+      class Hierarchy < Cmless
+        ROOT = File.expand_path('fixtures/good/hierarchy', File.dirname(__FILE__))
+        attr_reader :inherited_html
+      end
+      
+      describe 'instance methods' do
+        grandchild = Hierarchy.find_by_path('parent/child/grandchild')
 
-    describe 'hierarchical' do
-      grandchild = Hierarchy.find_by_path('parent/child/grandchild')
+        assertions = {
+          title: 'Grandchild!',
+          title_html: 'Grandchild!',
+          path: 'parent/child/grandchild',
+          ancestors: [
+            Hierarchy.find_by_path('parent'),
+            Hierarchy.find_by_path('parent/child')],
+          parent: Hierarchy.find_by_path('parent/child'),
+          children: [
+            Hierarchy.find_by_path('parent/child/grandchild/greatgrandchild1'),
+            Hierarchy.find_by_path('parent/child/grandchild/greatgrandchild2')],
+          inherited_html: '<p>All descendents get this.</p>'
+        }
 
-      assertions = {
-        title: 'Grandchild!',
-        title_html: 'Grandchild!',
-        path: 'parent/child/grandchild',
-        ancestors: [
-          Hierarchy.find_by_path('parent'),
-          Hierarchy.find_by_path('parent/child')],
-        parent: Hierarchy.find_by_path('parent/child'),
-        children: [
-          Hierarchy.find_by_path('parent/child/grandchild/greatgrandchild1'),
-          Hierarchy.find_by_path('parent/child/grandchild/greatgrandchild2')],
-        inherited_html: '<p>All descendents get this.</p>'
-      }
+        assertions.each do |method, value|
+          it "\##{method} method works" do
+            expect(grandchild.send(method)).to eq((value.strip rescue value))
+          end
+        end
 
-      assertions.each do |method, value|
-        it "\##{method} method works" do
-          expect(grandchild.send(method)).to eq((value.strip rescue value))
+        it 'tests everthing' do
+          expect(assertions.keys.sort)
+            .to eq((Hierarchy.instance_methods - Object.instance_methods).sort)
         end
       end
+      
+      describe 'class methods' do
+        paths = [
+          'parent', 'parent/child', 'parent/child/grandchild',
+          'parent/child/grandchild/greatgrandchild1',
+          'parent/child/grandchild/greatgrandchild2']
+        title_htmls = [
+          'Parent!', 'Child!', 'Grandchild!',
+          'Greatgrandchild1!', 'Greatgrandchild2!']
 
-      it 'tests everthing' do
-        expect(assertions.keys.sort)
-          .to eq((Hierarchy.instance_methods - Object.instance_methods).sort)
-      end
-    end
+        it '#all works' do
+          expect(Hierarchy.all.map(&:path).sort).to eq(paths)
+        end
 
-    describe 'class methods' do
-      paths = [
-        'parent', 'parent/child', 'parent/child/grandchild',
-        'parent/child/grandchild/greatgrandchild1',
-        'parent/child/grandchild/greatgrandchild2']
-      title_htmls = [
-        'Parent!', 'Child!', 'Grandchild!',
-        'Greatgrandchild1!', 'Greatgrandchild2!']
+        it '#objects_by_path works' do
+          expect(Hierarchy.objects_by_path.keys.sort).to eq(paths)
+        end
 
-      it '#all works' do
-        expect(Hierarchy.all.map(&:path).sort).to eq(paths)
-      end
+        it '#find_by_path works' do
+          expect(Hierarchy.find_by_path('parent').path).to eq('parent')
+        end
 
-      it '#objects_by_path works' do
-        expect(Hierarchy.objects_by_path.keys.sort).to eq(paths)
-      end
-
-      it '#find_by_path works' do
-        expect(Hierarchy.find_by_path('parent').path).to eq('parent')
-      end
-
-      describe 'Enumerable' do
-        it 'supports #map' do
-          expect(Hierarchy.map(&:path)).to eq(paths)
-          expect(Hierarchy.map(&:title_html)).to eq(title_htmls)
+        describe 'Enumerable' do
+          it 'supports #map' do
+            expect(Hierarchy.map(&:path)).to eq(paths)
+            expect(Hierarchy.map(&:title_html)).to eq(title_htmls)
+          end
         end
       end
     end
