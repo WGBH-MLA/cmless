@@ -101,12 +101,12 @@ class Cmless # rubocop:disable Metrics/ClassLength
           unless File.directory?(self::ROOT)
             fail StandardError.new("#{self::ROOT} is not a directory")
           end
-          Hash[
-            Dir[Pathname(self::ROOT) + '**/*.md'].sort.map do |path|
-              object = new(path)
-              [object.path, object]
-            end
-          ]
+          @object_by_path_in_progress = {}
+          Dir[Pathname(self::ROOT) + '**/*.md'].sort.each do |full_path|
+            object = new(full_path)
+            @object_by_path_in_progress[object.path] = object
+          end
+          @object_by_path_in_progress
         end
     end
 
