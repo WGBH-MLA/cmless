@@ -65,7 +65,8 @@ class Cmless # rubocop:disable Metrics/ClassLength
     @ancestors ||= begin
       split = path.split('/')
       (1..split.size - 1).to_a.map do |i|
-        self.class.objects_by_path[split[0, i].join('/')]
+        # to avoid infinite recursion, only look at the ones already loaded.
+        self.class.objects_by_path_in_progress[split[0, i].join('/')]
       end
     end
   end
@@ -99,6 +100,10 @@ class Cmless # rubocop:disable Metrics/ClassLength
         fail(IndexError.new(
                "'#{path}' is not a valid path under '#{self::ROOT}'; " \
                  "Expected one of #{objects_by_path.keys}"))
+    end
+    
+    def objects_by_path_in_progress
+      @object_by_path_in_progress
     end
 
     def objects_by_path # rubocop:disable Metrics/MethodLength

@@ -85,6 +85,7 @@ describe Cmless do
 
     class Hierarchy < Cmless
       ROOT = File.expand_path('fixtures/good/hierarchy', File.dirname(__FILE__))
+      attr_reader :inherited_html
     end
 
     describe 'hierarchical' do
@@ -100,7 +101,8 @@ describe Cmless do
         parent: Hierarchy.find_by_path('parent/child'),
         children: [
           Hierarchy.find_by_path('parent/child/grandchild/greatgrandchild1'),
-          Hierarchy.find_by_path('parent/child/grandchild/greatgrandchild2')]
+          Hierarchy.find_by_path('parent/child/grandchild/greatgrandchild2')],
+        inherited_html: '<p>All descendents get this.</p>' 
       }
 
       assertions.each do |method, value|
