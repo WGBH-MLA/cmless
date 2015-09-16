@@ -77,7 +77,7 @@ class Cmless # rubocop:disable Metrics/ClassLength
 
   class << self
     include Enumerable
-
+    
     def each(&block)
       all.each do |cmless|
         block.call(cmless)
@@ -87,9 +87,10 @@ class Cmless # rubocop:disable Metrics/ClassLength
     def all
       objects_by_path.values
     end
-
+    
     def find_by_path(path)
-      objects_by_path[path] ||
+      (@object_by_path_in_progress && @object_by_path_in_progress[path]) ||
+        objects_by_path[path] ||
         fail(IndexError.new(
                "'#{path}' is not a valid path under '#{self::ROOT}'; " \
                  "Expected one of #{objects_by_path.keys}"))
@@ -109,7 +110,7 @@ class Cmless # rubocop:disable Metrics/ClassLength
           @object_by_path_in_progress
         end
     end
-
+      
     # These are just used by the initialize. Perhaps there is a better place.
 
     def path_from_file_path(file_path)
