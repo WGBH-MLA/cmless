@@ -100,8 +100,7 @@ class Cmless
     end
 
     def find_by_path(path)
-      (@object_by_path_in_progress && @object_by_path_in_progress[path]) ||
-        objects_by_path[path] ||
+      objects_by_path[path] ||
         fail(IndexError.new(
                "'#{path}' is not a valid path under '#{self::ROOT}'; " \
                  "Expected one of #{objects_by_path.keys}"))
