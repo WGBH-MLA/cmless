@@ -8,24 +8,24 @@ describe Cmless do
           ROOT = File.expand_path('fixtures/good/sort-numeric', File.dirname(__FILE__))
           attr_reader :head_html
         end
-        
+
         expect(
           NumericSort.all.map do |obj|
-            obj.path + ':' + obj.head_html.gsub(/<.?p>/,'')
+            obj.path + ':' + obj.head_html.gsub(/<.?p>/, '')
           end.join(' ')
         ).to eq('first:1.0 middle:2 last:10.')
       end
-        
+
       it 'sorts alphabetically by path, otherwise' do
         class PathSort < Cmless
           ROOT = File.expand_path('fixtures/good/sort-path', File.dirname(__FILE__))
           attr_reader :head_html
         end
-        
-        expect(PathSort.all.map(&:path).join(' ')).to eq('first last middle/end middle/start')  
+
+        expect(PathSort.all.map(&:path).join(' ')).to eq('first last middle/end middle/start')
       end
     end
-    
+
     describe 'basic subsection extraction' do
       class Basic < Cmless
         ROOT = File.expand_path('fixtures/good/basic', File.dirname(__FILE__))
@@ -68,12 +68,12 @@ describe Cmless do
           expect { Basic.find_by_path('basic').title_html = 'new title' }
             .to raise_error(NoMethodError)
         end
-#        xit 'errors on direct attribute access' do
-#          # Freezing the objects after creation doesn't work right now
-#          # because @ancestors and @children are only filled in lazily.
-#          expect { Basic.find_by_path('basic').instance_variable_set(:@title_html, 'new title') }
-#            .to raise_error
-#        end
+        #        xit 'errors on direct attribute access' do
+        #          # Freezing the objects after creation doesn't work right now
+        #          # because @ancestors and @children are only filled in lazily.
+        #          expect { Basic.find_by_path('basic').instance_variable_set(:@title_html, 'new title') }
+        #            .to raise_error
+        #        end
       end
     end
 
@@ -112,7 +112,7 @@ describe Cmless do
         ROOT = File.expand_path('fixtures/good/hierarchy', File.dirname(__FILE__))
         attr_reader :inherited_html
       end
-      
+
       describe 'instance methods' do
         grandchild = Hierarchy.find_by_path('parent/child/grandchild')
 
@@ -141,7 +141,7 @@ describe Cmless do
             .to eq((Hierarchy.instance_methods - Object.instance_methods).sort)
         end
       end
-      
+
       describe 'class methods' do
         paths = [
           'parent', 'parent/child', 'parent/child/grandchild',

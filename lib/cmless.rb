@@ -42,10 +42,10 @@ class Cmless
         h2_name = method.to_s.gsub(/\_html$/, '').gsub('_', ' ').capitalize
         value = Cmless.extract_html(doc, h2_name)
         value ||= if parent # Look at parent if missing on self.
-          parent.send(method)
-        else
-          fail(IndexError.new("Can't find '#{method}'"))
-        end
+                    parent.send(method)
+                  else
+                    fail(IndexError.new("Can't find '#{method}'"))
+                  end
         instance_variable_set("@#{method}", value)
       end
 
@@ -96,7 +96,9 @@ class Cmless
     end
 
     def all
-      @all ||= objects_by_path.values.sort_by { |object| object.head_html.gsub('<p>','').to_f rescue object.path }
+      @all ||= objects_by_path.values.sort_by do |object|
+        object.head_html.gsub('<p>', '').to_f rescue object.path
+      end
     end
 
     def find_by_path(path)
