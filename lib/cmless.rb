@@ -96,7 +96,7 @@ class Cmless
     end
 
     def all
-      objects_by_path.values
+      @all ||= objects_by_path.values.sort_by { |object| object.head_html.gsub('<p>','').to_f rescue object.path }
     end
 
     def find_by_path(path)

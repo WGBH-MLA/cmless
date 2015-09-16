@@ -2,6 +2,30 @@ require_relative '../lib/cmless.rb'
 
 describe Cmless do
   describe 'correctly configured' do
+    describe 'sorting' do
+      it 'sorts numerically, if there are numbers' do
+        class NumericSort < Cmless
+          ROOT = File.expand_path('fixtures/good/sort-numeric', File.dirname(__FILE__))
+          attr_reader :head_html
+        end
+        
+        expect(
+          NumericSort.all.map do |obj|
+            obj.path + ':' + obj.head_html.gsub(/<.?p>/,'')
+          end.join(' ')
+        ).to eq('first:1.0 middle:2 last:10.')
+      end
+        
+      it 'sorts alphabetically by path, otherwise' do
+        class PathSort < Cmless
+          ROOT = File.expand_path('fixtures/good/sort-path', File.dirname(__FILE__))
+          attr_reader :head_html
+        end
+        
+        expect(PathSort.all.map(&:path).join(' ')).to eq('first last middle/end middle/start')  
+      end
+    end
+    
     describe 'basic subsection extraction' do
       class Basic < Cmless
         ROOT = File.expand_path('fixtures/good/basic', File.dirname(__FILE__))
