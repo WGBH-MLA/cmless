@@ -5,12 +5,14 @@
 require 'redcarpet'
 require 'singleton'
 require 'nokogiri'
+require 'cgi'
 
 # CMS alternative: Content in markdown / Extract HTML and data for display
 class Cmless
   attr_reader :path
   attr_reader :title
   attr_reader :title_html
+  attr_reader :toc_html
 
   private
 
@@ -19,13 +21,22 @@ class Cmless
     @path = self.class.path_from_file_path(file_path)
     Nokogiri::HTML(Markdowner.instance.render(File.read(file_path))).tap do |doc|
       html_methods = self.class.instance_methods
-                     .select { |method| method.to_s.match(/\_html$/) }
+                     .select { |method| method.to_s.match(/\_html$/) } - [:toc_html]
 
       doc.xpath('//h1').first.tap do |h1|
         @title_html = h1.inner_html
         @title = h1.text
         h1.remove
         html_methods.delete(:title_html)
+      end
+      
+      doc.xpath('//h3|//h4|//h5|//h6|//h7|//h8|//h9').tap do |hs|
+        inner = hs.map{ |h| 
+          escaped = CGI.escapeHTML(h.text)
+          hash = '#' + CGI.escapeHTML(h.attribute('id').to_s)
+          "<li><a href='#{hash}'>#{escaped}</a></li>" 
+        }.join("\n")
+        @toc_html = inner.empty? ? '' : "<ol>#{inner}</ol>\n"
       end
 
       if html_methods.include?(:head_html)
