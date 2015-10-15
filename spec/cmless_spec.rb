@@ -37,6 +37,7 @@ describe Cmless do
       basic = Basic.find_by_path('basic')
 
       assertions = {
+        toc_html: '',
         title: 'links in title & style!',
         title_html: '<a href="http://example.org/work">links in title</a> <strong>&amp; style!</strong>',
         path: 'basic',
@@ -86,6 +87,7 @@ describe Cmless do
       body = Body.find_by_path('body')
 
       assertions = {
+        toc_html: '',
         title: 'Just a title',
         title_html: 'Just a title',
         path: 'body',
@@ -107,6 +109,48 @@ describe Cmless do
       end
     end
 
+    describe 'ToC generation' do
+      # TODO: Nested structure would be nice.
+      let(:toc) {
+        <<END
+<ol><li><a href='#a1'>A1</a></li>
+<li><a href='#a1a'>A1a</a></li>
+<li><a href='#a2'>A2</a></li>
+<li><a href='#a2a'>A2a</a></li>
+<li><a href='#&gt;&gt;&gt;-decoration-and-links'>&gt;&gt;&gt; decoration AND links</a></li>
+<li><a href='#b1'>B1</a></li>
+<li><a href='#b1a'>B1a</a></li>
+<li><a href='#b1aa'>B1aA</a></li>
+<li><a href='#b1aa1'>B1aA1</a></li></ol>
+END
+      }
+      describe 'with just a body' do
+        # TODO: There ought to be ToC entries for "A" and "B"
+        class TocBody < Cmless
+          ROOT = File.expand_path('fixtures/good/toc', File.dirname(__FILE__))
+          attr_reader :body_html
+        end
+
+        doc = TocBody.find_by_path('toc')
+        it 'has ToC' do
+          expect(doc.toc_html).to eq(toc)
+        end
+      end
+
+      describe 'with subsections' do
+        class TocSubsections < Cmless
+          ROOT = File.expand_path('fixtures/good/toc', File.dirname(__FILE__))
+          attr_reader :a_html
+          attr_reader :b_html
+        end
+
+        doc = TocSubsections.find_by_path('toc')
+        it 'has ToC' do
+          expect(doc.toc_html).to eq(toc)
+        end
+      end
+    end
+
     describe 'hierarchical relations' do
       class Hierarchy < Cmless
         ROOT = File.expand_path('fixtures/good/hierarchy', File.dirname(__FILE__))
@@ -117,6 +161,7 @@ describe Cmless do
         grandchild = Hierarchy.find_by_path('parent/child/grandchild')
 
         assertions = {
+          toc_html: '',
           title: 'Grandchild!',
           title_html: 'Grandchild!',
           path: 'parent/child/grandchild',
