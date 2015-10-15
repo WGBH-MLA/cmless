@@ -29,13 +29,13 @@ class Cmless
         h1.remove
         html_methods.delete(:title_html)
       end
-      
+
       doc.xpath('//h3|//h4|//h5|//h6|//h7|//h8|//h9').tap do |hs|
-        inner = hs.map{ |h| 
+        inner = hs.map do |h|
           escaped = CGI.escapeHTML(h.text)
           hash = '#' + CGI.escapeHTML(h.attribute('id').to_s)
-          "<li><a href='#{hash}'>#{escaped}</a></li>" 
-        }.join("\n")
+          "<li><a href='#{hash}'>#{escaped}</a></li>"
+        end.join("\n")
         @toc_html = inner.empty? ? '' : "<ol>#{inner}</ol>\n"
       end
 

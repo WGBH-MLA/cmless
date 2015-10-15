@@ -108,10 +108,11 @@ describe Cmless do
           .to eq((Body.instance_methods - Object.instance_methods).sort)
       end
     end
-    
+
     describe 'ToC generation' do
       # TODO: Nested structure would be nice.
-      let(:toc) { <<END
+      let(:toc) {
+        <<END
 <ol><li><a href='#a1'>A1</a></li>
 <li><a href='#a1a'>A1a</a></li>
 <li><a href='#a2'>A2</a></li>
@@ -135,7 +136,7 @@ END
           expect(doc.toc_html).to eq(toc)
         end
       end
-      
+
       describe 'with subsections' do
         class TocSubsections < Cmless
           ROOT = File.expand_path('fixtures/good/toc', File.dirname(__FILE__))
@@ -148,7 +149,6 @@ END
           expect(doc.toc_html).to eq(toc)
         end
       end
-      
     end
 
     describe 'hierarchical relations' do
