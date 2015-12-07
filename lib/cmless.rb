@@ -34,9 +34,9 @@ class Cmless
         inner = hs.map do |h|
           escaped = CGI.escapeHTML(h.text)
           hash = '#' + CGI.escapeHTML(h.attribute('id').to_s)
-          "<li><a href='#{hash}'>#{escaped}</a></li>"
+          "<li class='cmless cmless-#{h.name}'><a href='#{hash}'>#{escaped}</a></li>"
         end.join("\n")
-        @toc_html = inner.empty? ? '' : "<ol>#{inner}</ol>\n"
+        @toc_html = inner.empty? ? '' : "<ol class='cmless'>#{inner}</ol>\n"
       end
 
       if html_methods.include?(:head_html)

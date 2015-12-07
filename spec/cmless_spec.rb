@@ -113,15 +113,15 @@ describe Cmless do
       # TODO: Nested structure would be nice.
       let(:toc) {
         <<END
-<ol><li><a href='#a1'>A1</a></li>
-<li><a href='#a1a'>A1a</a></li>
-<li><a href='#a2'>A2</a></li>
-<li><a href='#a2a'>A2a</a></li>
-<li><a href='#&gt;&gt;&gt;-decoration-and-links'>&gt;&gt;&gt; decoration AND links</a></li>
-<li><a href='#b1'>B1</a></li>
-<li><a href='#b1a'>B1a</a></li>
-<li><a href='#b1aa'>B1aA</a></li>
-<li><a href='#b1aa1'>B1aA1</a></li></ol>
+<ol class='cmless'><li class='cmless cmless-h3'><a href='#a1'>A1</a></li>
+<li class='cmless cmless-h4'><a href='#a1a'>A1a</a></li>
+<li class='cmless cmless-h3'><a href='#a2'>A2</a></li>
+<li class='cmless cmless-h4'><a href='#a2a'>A2a</a></li>
+<li class='cmless cmless-h4'><a href='#&gt;&gt;&gt;-decoration-and-links'>&gt;&gt;&gt; decoration AND links</a></li>
+<li class='cmless cmless-h3'><a href='#b1'>B1</a></li>
+<li class='cmless cmless-h4'><a href='#b1a'>B1a</a></li>
+<li class='cmless cmless-h5'><a href='#b1aa'>B1aA</a></li>
+<li class='cmless cmless-h6'><a href='#b1aa1'>B1aA1</a></li></ol>
 END
       }
       describe 'with just a body' do
