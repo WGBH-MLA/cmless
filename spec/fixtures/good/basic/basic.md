@@ -13,3 +13,7 @@ Should work, too.
 ## And won't choke on ~!@#$%^&*()_+`-={}|[]\:";'<>?,./ either
 
 Ditto.
+
+## Trailing punctuation?
+
+Yep.

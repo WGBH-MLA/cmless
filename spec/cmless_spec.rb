@@ -33,6 +33,7 @@ describe Cmless do
         attr_reader :summary_html
         attr_reader :can_be_multi_word_html
         attr_reader :and_wont_choke_on__either_html
+        attr_reader :trailing_punctuation_html
       end
 
       basic = Basic.find_by_path('basic')
@@ -48,7 +49,8 @@ describe Cmless do
         head_html: '<p>Head goes here.</p>',
         summary_html: '<p>Summary goes here.</p>',
         can_be_multi_word_html: '<p>Should work, too.</p>',
-        and_wont_choke_on__either_html: '<p>Ditto.</p>'
+        and_wont_choke_on__either_html: '<p>Ditto.</p>',
+        trailing_punctuation_html: '<p>Yep.</p>'
       }
 
       assertions.each do |method, value|
