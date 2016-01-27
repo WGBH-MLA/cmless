@@ -32,6 +32,8 @@ describe Cmless do
         attr_reader :head_html
         attr_reader :summary_html
         attr_reader :can_be_multi_word_html
+        attr_reader :and_wont_choke_on__either_html
+        attr_reader :trailing_punctuation_html
       end
 
       basic = Basic.find_by_path('basic')
@@ -45,8 +47,10 @@ describe Cmless do
         parent: nil,
         children: [],
         head_html: '<p>Head goes here.</p>',
+        summary_html: '<p>Summary goes here.</p>',
         can_be_multi_word_html: '<p>Should work, too.</p>',
-        summary_html: '<p>Summary goes here.</p>'
+        and_wont_choke_on__either_html: '<p>Ditto.</p>',
+        trailing_punctuation_html: '<p>Yep.</p>'
       }
 
       assertions.each do |method, value|
@@ -111,7 +115,7 @@ describe Cmless do
 
     describe 'ToC generation' do
       # TODO: Nested structure would be nice.
-      let(:toc) {
+      let(:toc) do
         <<END
 <ol class='cmless'><li class='cmless cmless-h3'><a href='#a1'>A1</a></li>
 <li class='cmless cmless-h4'><a href='#a1a'>A1a</a></li>
@@ -123,7 +127,7 @@ describe Cmless do
 <li class='cmless cmless-h5'><a href='#b1aa'>B1aA</a></li>
 <li class='cmless cmless-h6'><a href='#b1aa1'>B1aA1</a></li></ol>
 END
-      }
+      end
       describe 'with just a body' do
         # TODO: There ought to be ToC entries for "A" and "B"
         class TocBody < Cmless
@@ -240,6 +244,18 @@ END
       it 'errors' do
         expect { ExtraCruft.find_by_path('extra-cruft') }
           .to raise_error(/Extra Cruft\\n\\nShould cause an error/)
+      end
+    end
+
+    describe 'non ascii' do
+      class NonAscii < Cmless
+        ROOT = File.expand_path('fixtures/bad/non-ascii-h2', File.dirname(__FILE__))
+        attr_reader :sorry_html
+      end
+
+      it 'errors' do
+        expect { NonAscii.find_by_path('non-ascii-h2') }
+          .to raise_error(/Can't find 'sorry_html'/)
       end
     end
 

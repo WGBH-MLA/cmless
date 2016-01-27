@@ -9,3 +9,11 @@ Summary goes here.
 ## Can be multi word
 
 Should work, too.
+
+## And won't choke on ~!@#$%^&*()_+`-={}|[]\:";'<>?,./ either
+
+Ditto.
+
+## Trailing punctuation?
+
+Yep.
