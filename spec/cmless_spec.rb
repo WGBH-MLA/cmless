@@ -246,6 +246,18 @@ END
           .to raise_error(/Extra Cruft\\n\\nShould cause an error/)
       end
     end
+    
+    describe 'non ascii' do
+      class NonAscii < Cmless
+        ROOT = File.expand_path('fixtures/bad/non-ascii-h2', File.dirname(__FILE__))
+        attr_reader :sorry_html
+      end
+
+      it 'errors' do
+        expect { NonAscii.find_by_path('non-ascii-h2') }
+          .to raise_error(/Can't find 'sorry_html'/)
+      end
+    end
 
     describe 'missing #root_path' do
       class MissingRootPath < Cmless
