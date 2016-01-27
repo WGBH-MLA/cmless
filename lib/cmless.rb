@@ -146,7 +146,14 @@ class Cmless
 
     def extract_html(doc, title)
       following_siblings = []
-      doc.xpath("//h2[text()='#{title}']").first.tap do |header|
+      # UGLY:
+      # - title coming in is based on method name,
+      #   so it will only be [a-z0-9_].
+      # - Nokogiri only has XPath 1.0, so no regex replacements,
+      #   so we can't list every possible bad character.
+      # - XPath itself does not have a syntax for escaping in string literals,
+      #   so we concat.
+      doc.xpath("//h2[translate(text(),concat('~!@#\{$%^&*()_+`-=\}-\";:<>,.?/|\[]',\"'\"),'')='#{title}']").first.tap do |header|
         return nil unless header
         while header.next_element && !header.next_element.name.match(/h2/)
           following_siblings.push(header.next_element.remove)

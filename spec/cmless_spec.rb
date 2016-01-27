@@ -32,6 +32,7 @@ describe Cmless do
         attr_reader :head_html
         attr_reader :summary_html
         attr_reader :can_be_multi_word_html
+        attr_reader :and_wont_choke_on__either_html
       end
 
       basic = Basic.find_by_path('basic')
@@ -45,8 +46,9 @@ describe Cmless do
         parent: nil,
         children: [],
         head_html: '<p>Head goes here.</p>',
+        summary_html: '<p>Summary goes here.</p>',
         can_be_multi_word_html: '<p>Should work, too.</p>',
-        summary_html: '<p>Summary goes here.</p>'
+        and_wont_choke_on__either_html: '<p>Ditto.</p>'
       }
 
       assertions.each do |method, value|
