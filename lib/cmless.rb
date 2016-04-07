@@ -14,6 +14,9 @@ class Cmless
   attr_reader :title_html
   attr_reader :toc_html
 
+  class Cmless::Error < StandardError
+  end
+
   private
 
   # You should use find_by_path rather than creating your own instances.
@@ -55,7 +58,7 @@ class Cmless
         value ||= if parent # Look at parent if missing on self.
                     parent.send(method)
                   else
-                    fail(IndexError.new("Can't find '#{method}'"))
+                    fail(StandardError.new("Can't find '#{method}'"))
                   end
         instance_variable_set("@#{method}", value)
       end
@@ -114,7 +117,7 @@ class Cmless
 
     def find_by_path(path)
       objects_by_path[path] ||
-        fail(IndexError.new(
+        fail(Cmless::Error.new(
                "'#{path}' is not a valid path under '#{self::ROOT}'; " \
                  "Expected one of #{objects_by_path.keys}"))
     end

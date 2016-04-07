@@ -65,7 +65,7 @@ describe Cmless do
       end
 
       it 'raises an error for bad paths' do
-        expect { Basic.find_by_path('no/such/path') }.to raise_error(IndexError)
+        expect { Basic.find_by_path('no/such/path') }.to raise_error(Cmless::Error)
       end
 
       describe 'error on modification' do
@@ -116,6 +116,11 @@ describe Cmless do
     describe 'ToC generation' do
       # TODO: Nested structure would be nice.
       let(:toc) do
+        # If gems are out of date, it may still run but instead of producing
+        #   <a href='#&gt;&gt;&gt; ...
+        # it outputs
+        #   <a href='#gt-gt-gt- ...
+        # I'm not sure what causes this, but the fix is to 'bundle install'.
         <<END
 <ol class='cmless'><li class='cmless cmless-h3'><a href='#a1'>A1</a></li>
 <li class='cmless cmless-h4'><a href='#a1a'>A1a</a></li>
