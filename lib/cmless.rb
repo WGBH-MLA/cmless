@@ -58,7 +58,7 @@ class Cmless
         value ||= if parent # Look at parent if missing on self.
                     parent.send(method)
                   else
-                    fail(Cmless::Error.new("Can't find '#{method}'"))
+                    fail(StandardError.new("Can't find '#{method}'"))
                   end
         instance_variable_set("@#{method}", value)
       end
