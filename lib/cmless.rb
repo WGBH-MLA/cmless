@@ -116,10 +116,7 @@ class Cmless
     end
 
     def find_by_path(path)
-      objects_by_path[path] ||
-        fail(Cmless::Error.new(
-               "'#{path}' is not a valid path under '#{self::ROOT}'; " \
-                 "Expected one of #{objects_by_path.keys}"))
+      objects_by_path[path] || nil
     end
 
     def objects_by_path_in_progress
