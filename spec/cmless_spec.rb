@@ -65,7 +65,7 @@ describe Cmless do
       end
 
       it 'returns nil for bad paths' do
-        expect { Basic.find_by_path('no/such/path') }.to eq(nil)
+        expect(Basic.find_by_path('no/such/path')).to eq(nil)
       end
 
       describe 'error on modification' do
