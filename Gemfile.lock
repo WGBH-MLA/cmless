@@ -53,3 +53,9 @@ DEPENDENCIES
   redcarpet (~> 3.2.2)
   rspec
   rubocop
+
+RUBY VERSION
+   ruby 2.4.4p296
+
+BUNDLED WITH
+   1.17.3
