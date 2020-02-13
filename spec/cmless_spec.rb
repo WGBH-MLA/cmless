@@ -64,8 +64,8 @@ describe Cmless do
           .to eq((Basic.instance_methods - Object.instance_methods).sort)
       end
 
-      it 'raises an error for bad paths' do
-        expect { Basic.find_by_path('no/such/path') }.to raise_error(Cmless::Error)
+      it 'returns nil for bad paths' do
+        expect { Basic.find_by_path('no/such/path') }.to eq(nil)
       end
 
       describe 'error on modification' do
