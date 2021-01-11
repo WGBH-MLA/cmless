@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.4.4'
 
-gem 'redcarpet', '~> 3.2.2'
+gem 'redcarpet', '~> 3.5.1'
 gem 'nokogiri', '~> 1.6'
 
 gem 'rspec', group: [:development, :test]
