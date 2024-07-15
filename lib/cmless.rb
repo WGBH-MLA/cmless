@@ -124,7 +124,7 @@ class Cmless
     end
 
     def objects_by_path
-      @objects_by_path ||=
+      # @objects_by_path ||=
         begin
           unless File.directory?(self::ROOT)
             fail StandardError.new("#{self::ROOT} is not a directory")
